@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arabic Flashcard Trainer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .user-selection {
+            margin-bottom: 40px;
+        }
+
+        .user-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .user-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .joe-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .bella-btn {
+            background: linear-gradient(45deg, #e91e63, #c2185b);
+            color: white;
+        }
+
+        .user-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .flashcard-container {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .flashcard {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .arabic-text {
+            font-size: 3em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .transliteration {
+            font-size: 1.5em;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .translation {
+            font-size: 1.3em;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .show-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .correct-btn {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+        }
+
+        .incorrect-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .rating-buttons {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .rating-buttons h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .rating-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .rating-btn {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+        }
+
+        .rating-btn:nth-child(1) { background: linear-gradient(45deg, #e74c3c, #c0392b); }
+        .rating-btn:nth-child(2) { background: linear-gradient(45deg, #e67e22, #d35400); }
+        .rating-btn:nth-child(3) { background: linear-gradient(45deg, #f39c12, #e67e22); }
+        .rating-btn:nth-child(4) { background: linear-gradient(45deg, #f1c40f, #f39c12); }
+        .rating-btn:nth-child(5) { background: linear-gradient(45deg, #27ae60, #2ecc71); }
+        .rating-btn:nth-child(6) { background: linear-gradient(45deg, #2ecc71, #27ae60); }
+
+        .rating-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            background: #ecf0f1;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            transition: width 0.3s ease;
+        }
+
+        .settings {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .settings h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .setting-group {
+            margin-bottom: 15px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .setting-group input, .setting-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .user-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .arabic-text {
+                font-size: 2.5em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕌 Arabic Flashcard Trainer</h1>
+        <p class="subtitle">Learn Lebanese Arabic with spaced repetition</p>
+        
+        <div class="user-selection" id="userSelection">
+            <h3>Who are you?</h3>
+            <div class="user-buttons">
+                <button class="user-btn joe-btn" onclick="selectUser('JOE')">JOE</button>
+                <button class="user-btn bella-btn" onclick="selectUser('BELLA')">BELLA</button>
+            </div>
+        </div>
+
+        <div class="flashcard-container" id="flashcardContainer">
+            <div class="settings">
+                <h3>Settings</h3>
+                <div class="setting-group">
+                    <label for="numWords">Number of words to review:</label>
+                    <input type="number" id="numWords" value="10" min="1" max="50">
+                </div>
+                <div class="setting-group">
+                    <label for="reviewMode">Review mode:</label>
+                    <select id="reviewMode">
+                        <option value="normal">Normal Review</option>
+                        <option value="trouble">Trouble Words Only</option>
+                    </select>
+                </div>
+                <button class="control-btn show-btn" onclick="startReview()">Start Review</button>
+            </div>
+
+            <div class="stats" id="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCards">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="correctCards">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="incorrectCards">0</div>
+                    <div class="stat-label">Incorrect</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="flashcard" id="flashcard">
+                <div class="arabic-text" id="arabicText">مِتْضَايِق</div>
+                <div class="transliteration hidden" id="transliteration">mitDaayiq</div>
+                <div class="translation hidden" id="translation">Annoyed</div>
+            </div>
+
+            <div class="controls" id="controls">
+                <button class="control-btn show-btn" onclick="showAnswer()">Show Answer</button>
+                <div class="rating-buttons hidden" id="ratingButtons">
+                    <h4>How difficult was this word?</h4>
+                    <div class="rating-grid">
+                        <button class="rating-btn" onclick="rateCard(0)" title="Complete blackout">0</button>
+                        <button class="rating-btn" onclick="rateCard(1)" title="Incorrect response; correct one remembered">1</button>
+                        <button class="rating-btn" onclick="rateCard(2)" title="Incorrect response; where the correct one seemed easy to recall">2</button>
+                        <button class="rating-btn" onclick="rateCard(3)" title="Correct response with serious difficulty">3</button>
+                        <button class="rating-btn" onclick="rateCard(4)" title="Correct response with slight hesitation">4</button>
+                        <button class="rating-btn" onclick="rateCard(5)" title="Perfect response">5</button>
+                    </div>
+                </div>
+                <button class="control-btn next-btn hidden" onclick="nextCard()">Next Card</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = '';
+        let flashcards = [];
+        let currentCardIndex = 0;
+        let totalCards = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let currentSession = [];
+
+        function selectUser(user) {
+            currentUser = user;
+            document.getElementById('userSelection').style.display = 'none';
+            document.getElementById('flashcardContainer').style.display = 'block';
+            loadFlashcards();
+        }
+
+        async function loadFlashcards() {
+            try {
+                const response = await fetch(`flashcards_${currentUser}.csv`);
+                const csvText = await response.text();
+                flashcards = parseCSV(csvText);
+                console.log(`Loaded ${flashcards.length} flashcards for ${currentUser}`);
+            } catch (error) {
+                console.error('Error loading flashcards:', error);
+                showError('Failed to load flashcards. Make sure the CSV file exists.');
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const cards = [];
+            
+            for (let i = 1; i < lines.length; i++) { // Skip header
+                const line = lines[i].trim();
+                if (line) {
+                    const parts = line.split(',');
+                    if (parts.length >= 3) {
+                        cards.push({
+                            arabic: parts[0],
+                            transliteration: parts[1],
+                            translation: parts[2],
+                            lastReviewed: parts[3] || new Date().toISOString().split('T')[0],
+                            interval: parseInt(parts[4]) || 1,
+                            easeFactor: parseFloat(parts[5]) || 2.5,
+                            repetition: parseInt(parts[6]) || 0
+                        });
+                    }
+                }
+            }
+            return cards;
+        }
+
+        function startReview() {
+            const numWords = parseInt(document.getElementById('numWords').value);
+            const reviewMode = document.getElementById('reviewMode').value;
+            
+            if (numWords < 1 || numWords > 50) {
+                showError('Please enter a number between 1 and 50');
+                return;
+            }
+
+            // Shuffle flashcards and take the requested number
+            const shuffled = [...flashcards].sort(() => Math.random() - 0.5);
+            currentSession = shuffled.slice(0, Math.min(numWords, flashcards.length));
+            
+            currentCardIndex = 0;
+            totalCards = currentSession.length;
+            correctCount = 0;
+            incorrectCount = 0;
+            
+            updateStats();
+            showCurrentCard();
+        }
+
+        function showCurrentCard() {
+            if (currentCardIndex >= currentSession.length) {
+                showSessionComplete();
+                return;
+            }
+
+            const card = currentSession[currentCardIndex];
+            document.getElementById('arabicText').textContent = card.arabic;
+            document.getElementById('transliteration').textContent = card.transliteration;
+            document.getElementById('translation').textContent = card.translation;
+            
+            // Hide answer initially
+            document.getElementById('transliteration').classList.add('hidden');
+            document.getElementById('translation').classList.add('hidden');
+            document.getElementById('ratingButtons').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('show-btn').classList.remove('hidden');
+            
+            updateProgress();
+        }
+
+        function showAnswer() {
+            document.getElementById('transliteration').classList.remove('hidden');
+            document.getElementById('translation').classList.remove('hidden');
+            document.getElementById('show-btn').classList.add('hidden');
+            document.getElementById('ratingButtons').classList.remove('hidden');
+        }
+
+        function rateCard(grade) {
+            const card = currentSession[currentCardIndex];
+            
+            // Update spaced repetition algorithm (from your Python script)
+            updateFlashcard(card, grade);
+            
+            // Count correct/incorrect for stats
+            if (grade >= 3) {
+                correctCount++;
+            } else {
+                incorrectCount++;
+            }
+            
+            updateStats();
+            document.getElementById('ratingButtons').classList.add('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function updateFlashcard(card, grade) {
+            // Implement the spaced repetition algorithm from your Python script
+            if (grade >= 3) {
+                if (card.repetition === 0) {
+                    card.interval = 1;
+                } else if (card.repetition === 1) {
+                    card.interval = 6;
+                } else {
+                    card.interval = Math.floor(card.interval * card.easeFactor);
+                }
+                card.repetition += 1;
+            } else {
+                card.repetition = 0;
+                card.interval = 1;
+            }
+
+            card.easeFactor += (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
+            card.easeFactor = Math.max(1.3, card.easeFactor);
+            card.lastReviewed = new Date().toISOString().split('T')[0];
+        }
+
+        function nextCard() {
+            currentCardIndex++;
+            document.getElementById('next-btn').classList.add('hidden');
+            showCurrentCard();
+        }
+
+        function updateStats() {
+            document.getElementById('totalCards').textContent = totalCards;
+            document.getElementById('correctCards').textContent = correctCount;
+            document.getElementById('incorrectCards').textContent = incorrectCount;
+            
+            const accuracy = totalCards > 0 ? Math.round((correctCount / totalCards) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        function updateProgress() {
+            const progress = ((currentCardIndex + 1) / totalCards) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showSessionComplete() {
+            document.getElementById('flashcard').innerHTML = `
+                <h2>🎉 Session Complete!</h2>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">${totalCards}</div>
+                        <div class="stat-label">Total Cards</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${correctCount}</div>
+                        <div class="stat-label">Correct</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${incorrectCount}</div>
+                        <div class="stat-label">Incorrect</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${Math.round((correctCount / totalCards) * 100)}%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </div>
+                <button class="control-btn show-btn" onclick="startReview()">Start New Session</button>
+            `;
+            document.getElementById('controls').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.querySelector('.container').insertBefore(errorDiv, document.getElementById('flashcardContainer'));
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // Fix button IDs in HTML
+        document.addEventListener('DOMContentLoaded', function() {
+            const showBtn = document.querySelector('.show-btn');
+            const correctBtn = document.querySelector('.correct-btn');
+            const incorrectBtn = document.querySelector('.incorrect-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            
+            if (showBtn) showBtn.id = 'show-btn';
+            if (correctBtn) correctBtn.id = 'correct-btn';
+            if (incorrectBtn) incorrectBtn.id = 'incorrect-btn';
+            if (nextBtn) nextBtn.id = 'next-btn';
+        });
+    </script>
+</body>
+</html>
