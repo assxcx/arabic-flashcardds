@@ -373,7 +373,7 @@
 
             <div class="flashcard" id="flashcard">
                 <div class="arabic-text" id="arabicText">مِتْضَايِق</div>
-                <div class="transliteration hidden" id="transliteration">mitDaayiq</div>
+                <div class="transliteration" id="transliteration">mitDaayiq</div>
                 <div class="translation hidden" id="translation">Annoyed</div>
             </div>
 
@@ -480,8 +480,8 @@
             document.getElementById('transliteration').textContent = card.transliteration;
             document.getElementById('translation').textContent = card.translation;
             
-            // Hide answer initially
-            document.getElementById('transliteration').classList.add('hidden');
+            // Hide answer initially (but show transliteration)
+            document.getElementById('transliteration').classList.remove('hidden');
             document.getElementById('translation').classList.add('hidden');
             document.getElementById('ratingButtons').classList.add('hidden');
             document.getElementById('next-btn').classList.add('hidden');
@@ -491,7 +491,6 @@
         }
 
         function showAnswer() {
-            document.getElementById('transliteration').classList.remove('hidden');
             document.getElementById('translation').classList.remove('hidden');
             document.getElementById('show-btn').classList.add('hidden');
             document.getElementById('ratingButtons').classList.remove('hidden');
