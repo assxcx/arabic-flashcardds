@@ -420,13 +420,13 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
 
-            <div class="flashcard" id="flashcard">
+            <div class="flashcard hidden" id="flashcard">
                 <div class="arabic-text" id="arabicText">مِتْضَايِق</div>
                 <div class="transliteration" id="transliteration">mitDaayiq</div>
                 <div class="translation hidden" id="translation">Annoyed</div>
             </div>
 
-            <div class="controls" id="controls">
+            <div class="controls hidden" id="controls">
                 <button class="control-btn show-btn" onclick="showAnswer()">Show Answer</button>
                 <div class="rating-buttons hidden" id="ratingButtons">
                     <h4>How difficult was this word?</h4>
@@ -515,6 +515,11 @@
             incorrectCount = 0;
             
             updateStats();
+            
+            // Show the flashcard interface
+            document.getElementById('flashcard').classList.remove('hidden');
+            document.getElementById('controls').classList.remove('hidden');
+            
             showCurrentCard();
         }
 
@@ -546,6 +551,7 @@
         }
 
         function rateCard(grade) {
+            console.log('Rating card with grade:', grade);
             const card = currentSession[currentCardIndex];
             
             // Update spaced repetition algorithm (from your Python script)
@@ -561,6 +567,8 @@
             updateStats();
             document.getElementById('ratingButtons').classList.add('hidden');
             document.getElementById('next-btn').classList.remove('hidden');
+            
+            console.log('Card rated. Correct:', correctCount, 'Incorrect:', incorrectCount);
         }
 
         function updateFlashcard(card, grade) {
@@ -641,16 +649,15 @@
             }, 5000);
         }
 
-        // Fix button IDs in HTML
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Arabic Flashcard Trainer loaded successfully!');
+            
+            // Set button IDs for proper functionality
             const showBtn = document.querySelector('.show-btn');
-            const correctBtn = document.querySelector('.correct-btn');
-            const incorrectBtn = document.querySelector('.incorrect-btn');
             const nextBtn = document.querySelector('.next-btn');
             
             if (showBtn) showBtn.id = 'show-btn';
-            if (correctBtn) correctBtn.id = 'correct-btn';
-            if (incorrectBtn) incorrectBtn.id = 'incorrect-btn';
             if (nextBtn) nextBtn.id = 'next-btn';
         });
     </script>
